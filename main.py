@@ -1,18 +1,24 @@
+import os
 import sqlite3
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QDialog
-from PyQt5 import uic
+from Edit import Ui_Dialog
+from window import Ui_MainWindow
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "coffee.sqlite")
 
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-class Window(QMainWindow):
+class Window(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("main.ui", self)
-        self.con = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.con = sqlite3.connect(db_path)
         self.update_table()
         self.add_btn.clicked.connect(self.add_film)
         self.edit_btn.clicked.connect(self.edit_film)
@@ -52,11 +58,11 @@ class Window(QMainWindow):
             self.dialog.show()
 
 
-class AddEditCoffeeForm(QDialog):
+class AddEditCoffeeForm(QDialog, Ui_Dialog):
     def __init__(self, main_window, *params):
         super().__init__()
-        uic.loadUi('Edit.ui', self)
-        self.con = sqlite3.connect("coffee.sqlite")
+        self.setupUi(self)
+        self.con = sqlite3.connect(db_path)
         self.main_window = main_window
         self.action = "edit" if params else "add"
         if params:
